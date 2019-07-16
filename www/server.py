@@ -59,7 +59,17 @@ def index():
     if not feature:
         flask.abort(400)
 
-    flask.jsonify(feature)
+    # what we really want is an exporter we can pass flask.response
+    # to and just write to that like we do with the exporter.stdout
+    # class:
+    #
+    # def export_feature(self, f, **kwargs):
+    #	f = self.prepare_feature(f, **kwargs)
+    #   self.write_feature(f, sys.stdout)
+    #
+    # https://flask.palletsprojects.com/en/1.1.x/api/#response-objects
+
+    flask.abort(500)        
 
 if __name__ == '__main__':
 
