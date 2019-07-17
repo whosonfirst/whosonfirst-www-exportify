@@ -5,6 +5,8 @@ import sys
 import logging
 import geojson
 
+import cStringIO
+
 import flask
 import flask_cors
 import werkzeug
@@ -35,31 +37,34 @@ def index():
 
     if len(raw) == 0:
         logging.info("Nothing to parse")
-        flask.abort(400)
+        flask.abort(400, "Nothing to exportify")
 
     try:
         data = geojson.loads(raw)
     except Exception, e:
         logging.error(e)
-        flask.abort(400)
+        flask.abort(400, "Invalid GeoJSON")
 
     try:
         report = flask.g.validator.validate_feature(data)
-
-        if not report.ok():
-            logging.info("Validation failed")
-            flask.abort(400)
-
     except Exception, e:
         logging.error(e)
-        flask.abort(500)
+        flask.abort(500, "Failed to validate GeoJSON")
 
+    if not report.ok:
+        logging.info("Validation failed")
+
+        fh = cStringIO.StringIO()
+        report.print_report(fh)
+
+        flask.abort(400, fh.getvalue())
+            
     try:
         f = flask.g.exporter.export_feature(data)
         return f, 200, {'Content-Type': 'application/json; charset=utf-8'}
     except Exception, e:
         logging.error(e)
-        flask.abort(500)
+        flask.abort(500, "Failed to export GeoJSON")
 
 if __name__ == '__main__':
 
