@@ -3,14 +3,14 @@
 import os
 import sys
 import logging
-import json
+import geojson
 
 import flask
 import werkzeug
 import werkzeug.security
 from flask_cors import cross_origin
 
-import mapzen.whosonfirst.validate
+import mapzen.whosonfirst.validator
 import mapzen.whosonfirst.export
 
 app = flask.Flask(__name__)
@@ -24,52 +24,41 @@ def init():
         'derive': False,
     }
 
-    g.flask.exporter = mapzen.whosonfirst.export.base()
-    g.flask.validator = mapzen.whosonfirst.validator.validator(**vld_args)
+    flask.g.validator = mapzen.whosonfirst.validator.validator(**vld_args)
+    flask.g.exporter = mapzen.whosonfirst.export.string()
 
 @app.route("/", methods=["POST"])
 def index():
 
     raw = flask.request.data
 
+    if len(raw) == 0:
+        logging.info("Nothing to parse")
+        flask.abort(400)
+
     try:
-        data = json.loads(raw)
+        data = geojson.loads(raw)
     except Exception, e:
         logging.error(e)
         flask.abort(400)
 
     try:
-        report = g.flask.validator.validate_feature(data)
+        report = flask.g.validator.validate_feature(data)
 
         if not report.ok():
+            logging.info("Validation failed")
             flask.abort(400)
 
     except Exception, e:
         logging.error(e)
         flask.abort(500)
 
-    feature = None
-
     try:
-        feature = g.flask.exporter.export_feature(data)
+        f = flask.g.exporter.export_feature(data)
+        return f, 200, {'Content-Type': 'application/json; charset=utf-8'}
     except Exception, e:
         logging.error(e)
         flask.abort(500)
-
-    if not feature:
-        flask.abort(400)
-
-    # what we really want is an exporter we can pass flask.response
-    # to and just write to that like we do with the exporter.stdout
-    # class:
-    #
-    # def export_feature(self, f, **kwargs):
-    #	f = self.prepare_feature(f, **kwargs)
-    #   self.write_feature(f, sys.stdout)
-    #
-    # https://flask.palletsprojects.com/en/1.1.x/api/#response-objects
-
-    flask.abort(500)        
 
 if __name__ == '__main__':
 
@@ -79,7 +68,6 @@ if __name__ == '__main__':
     opt_parser = optparse.OptionParser()
 
     opt_parser.add_option('-p', '--port', dest='port', action='store', default=7777, help='')
-    opt_parser.add_option('-c', '--config', dest='config', action='store', default=None, help='')
     opt_parser.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False, help='Be chatty (default is false)')
 
     options, args = opt_parser.parse_args()
@@ -88,13 +76,6 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-
-    cfg = ConfigParser.ConfigParser()
-    cfg.read(options.config)
-
-    os.environ['EXPORTIFY_SEARCH_HOST'] = cfg.get('search', 'host')
-    os.environ['EXPORTIFY_SEARCH_PORT'] = cfg.get('search', 'port')
-    os.environ['EXPORTIFY_SEARCH_INDEX'] = cfg.get('search', 'index')
 
     port = int(options.port)
 
