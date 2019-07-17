@@ -2,10 +2,6 @@
 
 Expose the `py-mapzen-whosonfirst-export` functionality as an HTTP endpoint.
 
-## Important
-
-This is work in progress.
-
 ## Example
 
 ```
@@ -26,6 +22,7 @@ $> curl -s -X POST -H "Content-Type: application/json" -d @101736545.geojson loc
 
 ## See also
 
+* https://github.com/whosonfirst/py-mapzen-whosonfirst-validator
 * https://github.com/whosonfirst/py-mapzen-whosonfirst-export
 * https://github.com/whosonfirst/docker-whosonfirst-exportify
 * https://flask.palletsprojects.com/
