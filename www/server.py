@@ -66,6 +66,10 @@ def index():
         logging.error(e)
         flask.abort(500, "Failed to export GeoJSON")
 
+@app.route("/ping", methods=["GET"])
+def ping():
+    return "PONG"
+
 if __name__ == '__main__':
 
     import optparse
