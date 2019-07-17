@@ -6,14 +6,15 @@ import logging
 import geojson
 
 import flask
+import flask_cors
 import werkzeug
 import werkzeug.security
-from flask_cors import cross_origin
 
 import mapzen.whosonfirst.validator
 import mapzen.whosonfirst.export
 
 app = flask.Flask(__name__)
+flask_cors.CORS(app)
 
 logging.basicConfig(level=logging.INFO)
 
