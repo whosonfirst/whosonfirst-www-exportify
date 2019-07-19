@@ -70,6 +70,14 @@ def index():
 def ping():
     return "PONG"
 
+# this is so we can specify custom max_content_length settings when
+# running under gunicorn: https://github.com/benoitc/gunicorn/issues/135
+# for example: $> gunicorn 'server:app_with_max_content_length(2097152)'
+
+def app_with_max_content_length(len):
+    app.config['MAX_CONTENT_LENGTH'] = int(len)
+    return app
+
 if __name__ == '__main__':
 
     import optparse
