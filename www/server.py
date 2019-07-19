@@ -79,6 +79,7 @@ if __name__ == '__main__':
 
     opt_parser.add_option('--host', dest='host', action='store', default='127.0.0.1', help='')
     opt_parser.add_option('--port', dest='port', action='store', default=7777, help='')
+    opt_parser.add_option('--max-content-length', dest='max_content_length', action='store', default=1048576, help='')
     opt_parser.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False, help='Be chatty (default is false)')
 
     options, args = opt_parser.parse_args()
@@ -90,9 +91,10 @@ if __name__ == '__main__':
 
     host = options.host
     port = int(options.port)
+    max_content = int(options.max_content_length)
 
     # https://flask.palletsprojects.com/en/1.0.x/patterns/fileuploads/
-    # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+    app.config['MAX_CONTENT_LENGTH'] = max_content
 
     # Seriously do not ever run this with 'debug=True' no matter
     # how tempting. It is a bad idea. It will make you sad.
