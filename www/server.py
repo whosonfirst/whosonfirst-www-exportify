@@ -91,6 +91,9 @@ if __name__ == '__main__':
     host = options.host
     port = int(options.port)
 
+    # https://flask.palletsprojects.com/en/1.0.x/patterns/fileuploads/
+    # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
     # Seriously do not ever run this with 'debug=True' no matter
     # how tempting. It is a bad idea. It will make you sad.
 
