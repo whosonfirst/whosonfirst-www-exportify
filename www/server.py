@@ -4,8 +4,7 @@ import os
 import sys
 import logging
 import geojson
-
-import cStringIO
+import io
 
 import flask
 import flask_cors
@@ -54,7 +53,7 @@ def index():
     if not report.ok:
         logging.info("Validation failed")
 
-        fh = cStringIO.StringIO()
+        fh = io.StringIO()
         report.print_report(fh)
 
         flask.abort(400, fh.getvalue())
