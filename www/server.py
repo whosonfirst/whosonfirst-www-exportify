@@ -41,13 +41,13 @@ def index():
 
     try:
         data = geojson.loads(raw)
-    except Exception, e:
+    except Exception as e:
         logging.error(e)
         flask.abort(400, "Invalid GeoJSON")
 
     try:
         report = flask.g.validator.validate_feature(data)
-    except Exception, e:
+    except Exception as e:
         logging.error(e)
         flask.abort(500, "Failed to validate GeoJSON")
 
@@ -62,7 +62,7 @@ def index():
     try:
         f = flask.g.exporter.export_feature(data)
         return f, 200, {'Content-Type': 'application/json; charset=utf-8'}
-    except Exception, e:
+    except Exception as e:
         logging.error(e)
         flask.abort(500, "Failed to export GeoJSON")
 

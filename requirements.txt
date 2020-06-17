@@ -1,5 +1,5 @@
 flask
 flask_cors
 geojson
-git+https://github.com/whosonfirst/py-mapzen-whosonfirst-export#egg=mapzen.whosonfirst.export
-git+https://github.com/whosonfirst/py-mapzen-whosonfirst-validate#egg=mapzen.whosonfirst.validator
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-export
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-validate
