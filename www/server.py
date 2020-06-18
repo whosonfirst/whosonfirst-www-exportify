@@ -80,7 +80,6 @@ def app_with_max_content_length(len):
 if __name__ == '__main__':
 
     import optparse
-    import ConfigParser
 
     opt_parser = optparse.OptionParser()
 
